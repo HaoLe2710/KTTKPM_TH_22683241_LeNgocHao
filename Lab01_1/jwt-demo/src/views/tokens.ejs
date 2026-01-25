@@ -1,0 +1,84 @@
+<%- include("layout", { title: "Tokens", body: `
+  <h2>🗝️ Tokens & Debug</h2>
+
+  <div class="row">
+    <div class="col">
+      <div class="box">
+        <h3>🔐 Access Token</h3>
+        <p><strong>Status:</strong> 
+          <span class="badge ${accessToken ? 'success' : 'danger'}">
+            ${accessToken ? '✓ Present' : '✗ Missing'}
+          </span>
+        </p>
+        <p style="font-size: 12px; color: #666; margin-top: 8px;">Cookie: <code style="background: white; padding: 2px 6px; border-radius: 4px;">at</code></p>
+        
+        ${accessToken ? `
+          <h4>Token Value:</h4>
+          <pre style="word-break: break-all; font-size: 11px;">${accessToken}</pre>
+        ` : ''}
+
+        <h4>📋 Decoded Payload:</h4>
+        ${decodedAccess ? `
+          <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef;">
+            ${decodedAccess.sub ? `<div style="margin-bottom: 8px;"><strong>User ID:</strong> <code style="background: white; padding: 2px 6px;">${decodedAccess.sub}</code></div>` : ''}
+            ${decodedAccess.username ? `<div style="margin-bottom: 8px;"><strong>Username:</strong> <code style="background: white; padding: 2px 6px;">${decodedAccess.username}</code></div>` : ''}
+            ${decodedAccess.iat ? `<div style="margin-bottom: 8px;"><strong>Issued At:</strong> <code style="background: white; padding: 2px 6px; font-size: 11px;">${new Date(decodedAccess.iat * 1000).toLocaleString()}</code></div>` : ''}
+            ${decodedAccess.exp ? `<div style="margin-bottom: 8px;"><strong>Expires At:</strong> <code style="background: white; padding: 2px 6px; font-size: 11px;">${new Date(decodedAccess.exp * 1000).toLocaleString()}</code></div>` : ''}
+            ${decodedAccess.exp && decodedAccess.iat ? `<div><strong>TTL:</strong> <code style="background: white; padding: 2px 6px;">${decodedAccess.exp - decodedAccess.iat}s</code></div>` : ''}
+          </div>
+        ` : `<pre>(Not logged in)</pre>`}
+
+        <div style="margin-top: 12px;">
+          <button onclick="callProtected()">📡 Test Protected API</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="box">
+        <h3>🔄 Refresh Token</h3>
+        <p><strong>Status:</strong> 
+          <span class="badge ${refreshTokenPresent ? 'success' : 'danger'}">
+            ${refreshTokenPresent ? '✓ Present (HttpOnly)' : '✗ Missing'}
+          </span>
+        </p>
+        <p style="font-size: 12px; color: #666; margin-top: 8px;">Cookie: <code style="background: white; padding: 2px 6px; border-radius: 4px;">rt</code> (HttpOnly, not accessible from JS)</p>
+        
+        <h4>📋 Decoded Payload (Server-side):</h4>
+        ${decodedRefresh ? `
+          <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e9ecef;">
+            ${decodedRefresh.sub ? `<div style="margin-bottom: 8px;"><strong>User ID:</strong> <code style="background: white; padding: 2px 6px;">${decodedRefresh.sub}</code></div>` : ''}
+            ${decodedRefresh.iat ? `<div style="margin-bottom: 8px;"><strong>Issued At:</strong> <code style="background: white; padding: 2px 6px; font-size: 11px;">${new Date(decodedRefresh.iat * 1000).toLocaleString()}</code></div>` : ''}
+            ${decodedRefresh.exp ? `<div style="margin-bottom: 8px;"><strong>Expires At:</strong> <code style="background: white; padding: 2px 6px; font-size: 11px;">${new Date(decodedRefresh.exp * 1000).toLocaleString()}</code></div>` : ''}
+            ${decodedRefresh.exp && decodedRefresh.iat ? `<div><strong>TTL:</strong> <code style="background: white; padding: 2px 6px;">${decodedRefresh.exp - decodedRefresh.iat}s</code></div>` : ''}
+          </div>
+        ` : `<pre>(Not logged in)</pre>`}
+
+        <div style="margin-top: 12px; display: grid; gap: 8px;">
+          <button onclick="doRefresh()">🔄 Rotate Tokens</button>
+          <button onclick="doLogout()" class="danger">🚪 Logout & Revoke</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>💾 Server Store Snapshot</h3>
+    <p>View all tokens stored on the server (for debugging only)</p>
+    <button onclick="loadStore()" style="margin-bottom: 12px;">📥 Load Server Store</button>
+    <pre id="store" style="max-height: 400px;">(Click Load to fetch server-side data)</pre>
+  </div>
+
+  <div class="box">
+    <h3>🚀 Quick Testing Guide</h3>
+    <ol>
+      <li><strong>Step 1:</strong> Login at the <a href="/login" style="color: #667eea; font-weight: 600;">Login</a> page (admin/123)</li>
+      <li><strong>Step 2:</strong> Come back here and note the <strong>Expires At</strong> time for Access Token</li>
+      <li><strong>Step 3:</strong> Wait ${accessTTL} seconds for the access token to expire</li>
+      <li><strong>Step 4:</strong> Try calling the protected API - it will fail with <code style="background: white; padding: 2px 6px; border-radius: 4px;">401 Unauthorized</code></li>
+      <li><strong>Step 5:</strong> Click <strong>Rotate Tokens</strong> to refresh and get a new access token</li>
+      <li><strong>Step 6:</strong> Call the protected API again - it should now succeed</li>
+      <li><strong>Step 7:</strong> Click <strong>Logout & Revoke</strong> to clear all tokens from server</li>
+    </ol>
+  </div>
+`}) %>

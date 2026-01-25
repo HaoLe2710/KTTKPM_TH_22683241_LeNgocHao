@@ -1,0 +1,23 @@
+<%- include("layout", { title: "Login", body: `
+  <h2>🔑 Login</h2>
+  <div class="box">
+    <p>Sign in with the demo account to get JWT tokens and explore the authentication flow.</p>
+    
+    <div style="margin: 24px 0;">
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #333;">Username</label>
+        <input id="username" type="text" placeholder="admin" value="admin" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;" />
+      </div>
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #333;">Password</label>
+        <input id="password" type="password" placeholder="123" value="123" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;" />
+      </div>
+      <button onclick="doLogin()" style="width: 100%; padding: 12px; font-size: 16px;">Sign In</button>
+    </div>
+    
+    <div style="background: #e7f3ff; border-left: 4px solid #2196F3; padding: 12px; border-radius: 6px; margin-top: 16px;">
+      <strong style="color: #1976D2;">Demo Credentials:</strong>
+      <p style="color: #0d47a1; margin-top: 4px; font-family: monospace;">Username: admin | Password: 123</p>
+    </div>
+  </div>
+`}) %>

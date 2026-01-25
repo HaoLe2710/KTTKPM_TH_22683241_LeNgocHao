@@ -1,0 +1,302 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || "JWT Demo" %></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    nav {
+      background: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    nav a {
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #333;
+      background: #f0f0f0;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    nav a:hover { background: #667eea; color: white; }
+    
+    .auth-info {
+      background: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .auth-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .status-badge.logged-in { background: #d4edda; color: #155724; }
+    .status-badge.logged-out { background: #f8d7da; color: #721c24; }
+    
+    .box {
+      background: white;
+      border: none;
+      padding: 24px;
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .box:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); }
+    .box h2 { color: #667eea; margin-bottom: 16px; font-size: 24px; }
+    .box h3 { color: #667eea; margin-bottom: 12px; font-size: 18px; }
+    .box h4 { color: #555; margin-top: 12px; margin-bottom: 8px; font-size: 14px; }
+    .box p { color: #666; line-height: 1.6; margin-bottom: 12px; }
+    .box ul { margin-left: 20px; }
+    .box li { margin-bottom: 8px; color: #666; }
+    .box ol { margin-left: 20px; }
+    .box ol li { margin-bottom: 10px; color: #666; }
+    
+    code, pre {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      padding: 12px;
+      border-radius: 8px;
+      display: block;
+      overflow: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #333;
+      margin: 8px 0;
+    }
+    pre { max-height: 300px; }
+    
+    button {
+      padding: 10px 16px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      border: none;
+      border-radius: 6px;
+      background: #667eea;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    button:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4); }
+    button:active { transform: translateY(0); }
+    button.danger { background: #dc3545; }
+    button.danger:hover { background: #c82333; }
+    
+    .row { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+    .col { flex: 1; min-width: 300px; }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .badge.success { background: #d4edda; color: #155724; }
+    .badge.danger { background: #f8d7da; color: #721c24; }
+    
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      max-width: 400px;
+    }
+    .toast {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      animation: slideIn 0.3s ease;
+      border-left: 4px solid #667eea;
+    }
+    .toast.success { border-left-color: #28a745; }
+    .toast.success .toast-title { color: #155724; }
+    .toast.error { border-left-color: #dc3545; }
+    .toast.error .toast-title { color: #721c24; }
+    .toast-title { font-weight: 600; margin-bottom: 4px; }
+    .toast-message { font-size: 14px; color: #666; }
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+    .toast.removing { animation: slideOut 0.3s ease forwards; }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .info-card {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+    .info-card strong { display: block; color: #667eea; margin-bottom: 4px; }
+    .info-card span { color: #666; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="/">🔐 Home</a>
+      <a href="/login">🔑 Login</a>
+      <a href="/dashboard">📊 Dashboard</a>
+      <a href="/tokens">🗝️ Tokens & Debug</a>
+    </nav>
+
+    <div class="auth-info">
+      <div class="auth-status">
+        <b>Auth Status:</b>
+        <% if (user) { %>
+          <span class="status-badge logged-in">✓ LOGGED IN</span>
+          <span><%= user.username %> (ID: <%= user.sub %>)</span>
+        <% } else { %>
+          <span class="status-badge logged-out">✗ NOT LOGGED IN</span>
+          <span>Access token expired or not authenticated</span>
+        <% } %>
+      </div>
+    </div>
+
+    <%- body %>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    function showToast(title, message, type = 'info') {
+      const container = document.querySelector('#toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <div class="toast-title">${title}</div>
+        <div class="toast-message">${message}</div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    async function api(path, method="GET", body) {
+      try {
+        const res = await fetch(path, {
+          method,
+          headers: body ? {"Content-Type":"application/json"} : undefined,
+          body: body ? JSON.stringify(body) : undefined
+        });
+        const data = await res.json().catch(()=> ({}));
+        return { ok: res.ok, status: res.status, data };
+      } catch (err) {
+        showToast('Error', err.message, 'error');
+        return { ok: false, status: 0, data: { error: err.message } };
+      }
+    }
+
+    async function doLogin() {
+      const username = document.querySelector("#username")?.value;
+      const password = document.querySelector("#password")?.value;
+      if (!username || !password) {
+        showToast('Validation Error', 'Please enter username and password', 'error');
+        return;
+      }
+      showToast('Logging in...', 'Authenticating your credentials');
+      const r = await api("/api/login", "POST", { username, password });
+      if (r.ok) {
+        showToast('Success', `Welcome ${r.data.user?.username}!`, 'success');
+        setTimeout(() => location.href = "/tokens", 1500);
+      } else {
+        showToast('Login Failed', r.data.message || 'Invalid credentials', 'error');
+      }
+    }
+
+    async function callProtected() {
+      showToast('Calling API', 'Requesting /api/protected...');
+      const r = await api("/api/protected");
+      if (r.ok) {
+        showToast('Success', `Response: ${r.data.message}`, 'success');
+      } else if (r.status === 401) {
+        showToast('Unauthorized', 'Access token expired or invalid', 'error');
+      } else {
+        showToast('Error', `HTTP ${r.status}: ${r.data.message}`, 'error');
+      }
+    }
+
+    async function doRefresh() {
+      showToast('Refreshing', 'Generating new access token...');
+      const r = await api("/api/refresh", "POST");
+      if (r.ok) {
+        showToast('Success', 'Tokens rotated successfully!', 'success');
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        showToast('Refresh Failed', r.data.message || 'Could not refresh tokens', 'error');
+      }
+    }
+
+    async function doLogout() {
+      if (!confirm('Are you sure you want to logout?')) return;
+      showToast('Logging out', 'Clearing sessions...');
+      const r = await api("/api/logout", "POST");
+      if (r.ok) {
+        showToast('Logged Out', 'All tokens revoked', 'success');
+        setTimeout(() => location.href = "/", 1500);
+      } else {
+        showToast('Error', r.data.message || 'Logout failed', 'error');
+      }
+    }
+
+    async function loadStore() {
+      showToast('Loading', 'Fetching server store...');
+      const r = await api("/api/debug/store");
+      if (r.ok) {
+        const pre = document.querySelector("#store");
+        if (pre) pre.textContent = JSON.stringify(r.data, null, 2);
+        showToast('Loaded', 'Server store data loaded', 'success');
+      } else {
+        showToast('Error', 'Could not load store data', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

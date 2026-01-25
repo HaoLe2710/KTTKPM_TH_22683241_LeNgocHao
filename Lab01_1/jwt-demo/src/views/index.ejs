@@ -1,0 +1,44 @@
+<%- include("layout", { title: "Home", body: `
+  <h2>🔐 JWT Token Demo</h2>
+  <div class="box">
+    <p><strong>Objective:</strong> Learn how JWT authentication works with token rotation and refresh mechanisms.</p>
+    
+    <div class="info-grid">
+      <div class="info-card">
+        <strong>⏱️ Access Token TTL</strong>
+        <span>${accessTTL} seconds</span>
+      </div>
+      <div class="info-card">
+        <strong>🔄 Refresh Token TTL</strong>
+        <span>${refreshTTL} seconds</span>
+      </div>
+      <div class="info-card">
+        <strong>🍪 Storage Method</strong>
+        <span>HttpOnly Cookies</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>📚 How to Test:</h3>
+    <ol>
+      <li><strong>Login:</strong> Go to <a href="/login" style="color: #667eea; font-weight: 600;">Login</a> with <code style="background: white; padding: 2px 6px; border-radius: 4px;">admin / 123</code></li>
+      <li><strong>View Tokens:</strong> Go to <a href="/tokens" style="color: #667eea; font-weight: 600;">Tokens & Debug</a> and check the decoded tokens</li>
+      <li><strong>Wait for Expiry:</strong> Wait ~${accessTTL}s for the access token to expire</li>
+      <li><strong>Refresh Token:</strong> Click <strong>Refresh</strong> to get a new access token (automatic rotation)</li>
+      <li><strong>Access Protected:</strong> Visit <a href="/dashboard" style="color: #667eea; font-weight: 600;">Dashboard</a> (requires valid access token)</li>
+      <li><strong>Logout:</strong> Click <strong>Logout</strong> to revoke all tokens</li>
+    </ol>
+  </div>
+
+  <div class="box">
+    <h3>📖 What You'll Learn:</h3>
+    <ul>
+      <li>✓ JWT token structure and claims (header.payload.signature)</li>
+      <li>✓ Access token expiration handling</li>
+      <li>✓ Token refresh/rotation mechanism</li>
+      <li>✓ HttpOnly cookie security best practices</li>
+      <li>✓ Server-side token validation and revocation</li>
+    </ul>
+  </div>
+`}) %>
