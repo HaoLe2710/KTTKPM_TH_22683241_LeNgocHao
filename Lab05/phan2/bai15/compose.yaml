@@ -1,0 +1,9 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis_bai15
+    restart: always
+    ports:
+      - "6379:6379"
+    mem_limit: 256m
+    cpus: 0.5

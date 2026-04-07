@@ -1,0 +1,7 @@
+services:
+  node-app:
+    build: .
+    container_name: node_bai4
+    ports:
+      - "3000:3000"
+    restart: always

@@ -1,0 +1,52 @@
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis_bai8
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - django_net
+
+  web:
+    build: ./app
+    container_name: django_web_bai8
+    restart: unless-stopped
+    depends_on:
+      - redis
+    environment:
+      DJANGO_DEBUG: "True"
+      DJANGO_SECRET_KEY: super-secret-key-demo
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./app:/app
+    networks:
+      - django_net
+
+  celery:
+    build: ./app
+    container_name: celery_worker_bai8
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - web
+    environment:
+      DJANGO_DEBUG: "True"
+      DJANGO_SECRET_KEY: super-secret-key-demo
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    command: celery -A core worker --loglevel=info
+    volumes:
+      - ./app:/app
+    networks:
+      - django_net
+
+networks:
+  django_net:
+    driver: bridge

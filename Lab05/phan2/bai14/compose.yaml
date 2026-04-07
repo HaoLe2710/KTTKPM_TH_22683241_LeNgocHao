@@ -1,0 +1,18 @@
+services:
+  app1:
+    image: alpine:latest
+    container_name: app1_bai14
+    command: sh -c "while true; do echo app1 is running; sleep 10; done"
+    networks:
+      - private_net
+
+  app2:
+    image: alpine:latest
+    container_name: app2_bai14
+    command: sh -c "while true; do echo app2 is running; sleep 10; done"
+    networks:
+      - private_net
+
+networks:
+  private_net:
+    driver: bridge

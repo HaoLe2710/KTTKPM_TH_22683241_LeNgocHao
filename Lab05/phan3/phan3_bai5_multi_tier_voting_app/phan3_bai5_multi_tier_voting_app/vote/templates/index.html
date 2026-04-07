@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voting App</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 40px; }
+    .box { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.08); text-align: center; }
+    h1 { margin-bottom: 25px; }
+    .buttons { display: flex; gap: 20px; justify-content: center; }
+    button { border: none; padding: 16px 24px; font-size: 18px; border-radius: 10px; cursor: pointer; min-width: 180px; }
+    .a { background: #4caf50; color: white; }
+    .b { background: #2196f3; color: white; }
+    a { display: inline-block; margin-top: 20px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Multi-tier Voting App</h1>
+    <form method="post" action="/vote">
+      <div class="buttons">
+        <button class="a" type="submit" name="vote" value="a">{{ option_a }}</button>
+        <button class="b" type="submit" name="vote" value="b">{{ option_b }}</button>
+      </div>
+    </form>
+    <a href="http://localhost:5001" target="_blank">View Result</a>
+  </div>
+</body>
+</html>

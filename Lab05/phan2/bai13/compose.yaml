@@ -1,0 +1,7 @@
+services:
+  react-app:
+    build: .
+    container_name: react_nginx_bai13
+    ports:
+      - "8080:80"
+    restart: always
